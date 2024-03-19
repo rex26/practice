@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:practice/global/global_value.dart';
 import 'package:practice/pages/normal/home_page.dart';
 import 'package:practice/pages/normal/home_sub_route_page.dart';
+import 'package:practice/pages/normal/login_page.dart';
 import 'package:practice/pages/normal/modal_page.dart';
 import 'package:practice/pages/normal/normal_page.dart';
 import 'package:practice/pages/normal/param_page.dart';
 import 'package:practice/pages/normal/sub_route_page.dart';
 import 'package:practice/pages/normal/top_route_page.dart';
+import 'package:practice/pages/shell/shell_route_app.dart';
+import 'package:practice/utils/navigation_history_observer.dart';
+
+import '../pages/custom_error_screen.dart';
 
 class GoRouterHelper {
   static GoRouter getRouter(BuildContext context) {
@@ -14,6 +20,22 @@ class GoRouterHelper {
     return GoRouter(
       initialLocation: '/',
       debugLogDiagnostics: true,
+      navigatorKey: rootNavigatorKey,
+      observers: [
+        NavigationHistoryObserver.singleInstance,
+      ],
+      redirect: (BuildContext context, GoRouterState state) {
+        if (GlobalValue.isLogin) {
+          return null;
+        } else {
+          return '/login';
+          // return context.namedLocation('login_route');
+        }
+      },
+      errorBuilder: (context, state) => CustomErrorScreen(state.error),
+      // onException: (BuildContext context, GoRouterState state, GoRouter router) {
+      //   print('onException: ${state.error}');
+      // },
       routes: [
         // top-level route
         GoRoute(
@@ -23,7 +45,20 @@ class GoRouterHelper {
             // one sub-route
             GoRoute(
               path: 'home_sub_route_page',
-              builder: (context, state) => const HomeSubRoutePage(),
+              builder: (context, state) => const ModalPage(), // 失效，会使用 pageBuilder
+              pageBuilder: (context, state) {
+                return CustomTransitionPage(
+                  key: state.pageKey,
+                  child: const HomeSubRoutePage(),
+                  transitionDuration: const Duration(milliseconds: 1000),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+                      child: child,
+                    );
+                  },
+                );
+              },
             ),
             // another sub-route
             GoRoute(
@@ -36,11 +71,18 @@ class GoRouterHelper {
           ],
         ),
         GoRoute(
-            path: '/common_page',
-            builder: (context, state) {
-              var number = state.uri.queryParameters['number'];
-              return NormalPage(number: number);
-            }),
+          path: '/login',
+          name: 'login_route',
+          builder: (context, state) => const LoginPage(),
+        ),
+        GoRoute(
+          path: '/normal_page',
+          name: 'normal_page_route',
+          builder: (context, state) {
+            var number = state.uri.queryParameters['number'];
+            return NormalPage(number: number);
+          },
+        ),
         GoRoute(
           path: '/params_page/:id',
           builder: (context, GoRouterState state) {

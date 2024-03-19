@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:practice/pages/shell/shell_widgets.dart';
 
-final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 /// An example demonstrating how to use [ShellRoute]
@@ -11,7 +11,7 @@ class ShellRouteExampleApp extends StatelessWidget {
   ShellRouteExampleApp({super.key});
 
   final GoRouter _router = GoRouter(
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/a',
     debugLogDiagnostics: true,
     routes: <RouteBase>[
@@ -53,7 +53,7 @@ class ShellRouteExampleApp extends StatelessWidget {
               /// and the application shell.
               GoRoute(
                 path: 'details',
-                parentNavigatorKey: _rootNavigatorKey,
+                parentNavigatorKey: rootNavigatorKey,
                 builder: (BuildContext context, GoRouterState state) {
                   return const DetailsScreen(label: 'B');
                 },

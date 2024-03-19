@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:practice/helper/go_router_helper.dart';
-
+final GlobalKey<NavigatorState> globalNavigator = GlobalKey<NavigatorState>();
 class NormalRouteApp extends StatelessWidget {
   const NormalRouteApp({Key? key}) : super(key: key);
 

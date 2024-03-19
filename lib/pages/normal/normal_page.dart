@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:practice/global/global_value.dart';
+
+import '../../widgets/custom_app_bar.dart';
 
 int commonPageCounter = 0;
 
@@ -10,16 +13,31 @@ class NormalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: const CustomAppbar(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Common Page - \$${number ?? 0}'),
+            Text('Normal Page - \$${number ?? 0}'),
             buildPushButton(context),
             FilledButton(
-              onPressed: () => context.pop(number),
+              onPressed: () {
+                GlobalValue.isLogin = false;
+                context.push('/normal_page');
+              },
+              child: const Text('退出登录，并尝试push: /normal_page'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (context.canPop()) {
+                  context.pop(number);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('There is nothing to pop')),
+                  );
+                }
+              },
               child: const Text('返回上一个页面'),
             ),
           ],
@@ -37,7 +55,7 @@ class NormalPage extends StatelessWidget {
     }
     return FilledButton(
       onPressed: () async {
-        String? result = await context.push('/common_page?number=${++commonPageCounter}');
+        String? result = await context.push('/normal_page?number=${++commonPageCounter}');
         if (result != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('返回的参数是：$result')),

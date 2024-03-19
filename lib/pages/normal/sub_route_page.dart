@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/custom_app_bar.dart';
+
 class SubRoutePage extends StatelessWidget {
   const SubRoutePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: CustomAppbar(),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
