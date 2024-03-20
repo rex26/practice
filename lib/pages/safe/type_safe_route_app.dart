@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'data.dart';
-/*
 
 part 'type_safe_route_app.g.dart';
+
 
 class TypeSafeRouteApp extends StatelessWidget {
   TypeSafeRouteApp({super.key});
@@ -362,4 +362,5 @@ class LoginScreen extends StatelessWidget {
       ),
     ),
   );
-}*/
+}
+
