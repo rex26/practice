@@ -8,7 +8,6 @@ import 'data.dart';
 
 part 'type_safe_route_app.g.dart';
 
-
 class TypeSafeRouteApp extends StatelessWidget {
   TypeSafeRouteApp({super.key});
 
@@ -17,13 +16,13 @@ class TypeSafeRouteApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider<LoginInfo>.value(
-    value: loginInfo,
-    child: MaterialApp.router(
-      routerConfig: _router,
-      title: title,
-      debugShowCheckedModeBanner: false,
-    ),
-  );
+        value: loginInfo,
+        child: MaterialApp.router(
+          routerConfig: _router,
+          title: title,
+          debugShowCheckedModeBanner: true,
+        ),
+      );
 
   late final GoRouter _router = GoRouter(
     debugLogDiagnostics: true,
@@ -89,8 +88,7 @@ class LoginRoute extends GoRouteData {
   final String? fromPage;
 
   @override
-  Widget build(BuildContext context, GoRouterState state) =>
-      LoginScreen(from: fromPage);
+  Widget build(BuildContext context, GoRouterState state) => LoginScreen(from: fromPage);
 }
 
 class FamilyRoute extends GoRouteData {
@@ -99,8 +97,7 @@ class FamilyRoute extends GoRouteData {
   final String fid;
 
   @override
-  Widget build(BuildContext context, GoRouterState state) =>
-      FamilyScreen(family: familyById(fid));
+  Widget build(BuildContext context, GoRouterState state) => FamilyScreen(family: familyById(fid));
 }
 
 class PersonRoute extends GoRouteData {
@@ -150,8 +147,8 @@ class FamilyCountRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) => FamilyCountScreen(
-    count: count,
-  );
+        count: count,
+      );
 }
 
 class HomeScreen extends StatelessWidget {
@@ -178,9 +175,7 @@ class HomeScreen extends StatelessWidget {
                   value: '2',
                   child: const Text('Push w/ return value'),
                   onTap: () async {
-                    unawaited(FamilyCountRoute(familyData.length)
-                        .push<int>(context)
-                        .then((int? value) {
+                    unawaited(FamilyCountRoute(familyData.length).push<int>(context).then((int? value) {
                       if (value != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -216,21 +211,22 @@ class HomeScreen extends StatelessWidget {
 
 class FamilyScreen extends StatelessWidget {
   const FamilyScreen({required this.family, super.key});
+
   final Family family;
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(family.name)),
-    body: ListView(
-      children: <Widget>[
-        for (final Person p in family.people)
-          ListTile(
-            title: Text(p.name),
-            onTap: () => PersonRoute(family.id, p.id).go(context),
-          ),
-      ],
-    ),
-  );
+        appBar: AppBar(title: Text(family.name)),
+        body: ListView(
+          children: <Widget>[
+            for (final Person p in family.people)
+              ListTile(
+                title: Text(p.name),
+                onTap: () => PersonRoute(family.id, p.id).go(context),
+              ),
+          ],
+        ),
+      );
 }
 
 class PersonScreen extends StatelessWidget {
@@ -243,34 +239,31 @@ class PersonScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(person.name)),
-    body: ListView(
-      children: <Widget>[
-        ListTile(
-          title: Text(
-              '${person.name} ${family.name} is ${person.age} years old'),
+        appBar: AppBar(title: Text(person.name)),
+        body: ListView(
+          children: <Widget>[
+            ListTile(
+              title: Text('${person.name} ${family.name} is ${person.age} years old'),
+            ),
+            for (final MapEntry<PersonDetails, String> entry in person.details.entries)
+              ListTile(
+                title: Text(
+                  '${entry.key.name} - ${entry.value}',
+                ),
+                trailing: OutlinedButton(
+                  onPressed: () => PersonDetailsRoute(
+                    family.id,
+                    person.id,
+                    entry.key,
+                    $extra: ++_extraClickCount,
+                  ).go(context),
+                  child: const Text('With extra...'),
+                ),
+                onTap: () => PersonDetailsRoute(family.id, person.id, entry.key).go(context),
+              )
+          ],
         ),
-        for (final MapEntry<PersonDetails, String> entry
-        in person.details.entries)
-          ListTile(
-            title: Text(
-              '${entry.key.name} - ${entry.value}',
-            ),
-            trailing: OutlinedButton(
-              onPressed: () => PersonDetailsRoute(
-                family.id,
-                person.id,
-                entry.key,
-                $extra: ++_extraClickCount,
-              ).go(context),
-              child: const Text('With extra...'),
-            ),
-            onTap: () => PersonDetailsRoute(family.id, person.id, entry.key)
-                .go(context),
-          )
-      ],
-    ),
-  );
+      );
 }
 
 class PersonDetailsPage extends StatelessWidget {
@@ -289,21 +282,20 @@ class PersonDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(person.name)),
-    body: ListView(
-      children: <Widget>[
-        ListTile(
-          title: Text(
-            '${person.name} ${family.name}: '
+        appBar: AppBar(title: Text(person.name)),
+        body: ListView(
+          children: <Widget>[
+            ListTile(
+              title: Text(
+                '${person.name} ${family.name}: '
                 '$detailsKey - ${person.details[detailsKey]}',
-          ),
+              ),
+            ),
+            if (extra == null) const ListTile(title: Text('No extra click!')),
+            if (extra != null) ListTile(title: Text('Extra click count: $extra')),
+          ],
         ),
-        if (extra == null) const ListTile(title: Text('No extra click!')),
-        if (extra != null)
-          ListTile(title: Text('Extra click count: $extra')),
-      ],
-    ),
-  );
+      );
 }
 
 class FamilyCountScreen extends StatelessWidget {
@@ -313,54 +305,54 @@ class FamilyCountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Family Count')),
-    body: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Center(
-            child: Text(
-              'There are $count families',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
+        appBar: AppBar(title: const Text('Family Count')),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Center(
+                child: Text(
+                  'There are $count families',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => context.pop(count),
+                child: Text('Pop with return value $count'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => context.pop(count),
-            child: Text('Pop with return value $count'),
-          ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({this.from, super.key});
+
   final String? from;
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text(TypeSafeRouteApp.title)),
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          ElevatedButton(
-            onPressed: () {
-              // log a user in, letting all the listeners know
-              context.read<LoginInfo>().login('test-user');
+        appBar: AppBar(title: const Text(TypeSafeRouteApp.title)),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  // log a user in, letting all the listeners know
+                  context.read<LoginInfo>().login('test-user');
 
-              // if there's a deep link, go there
-              if (from != null) {
-                context.go(from!);
-              }
-            },
-            child: const Text('Login'),
+                  // if there's a deep link, go there
+                  if (from != null) {
+                    context.go(from!);
+                  }
+                },
+                child: const Text('Login'),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }
-
