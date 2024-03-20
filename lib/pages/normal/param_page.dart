@@ -13,7 +13,7 @@ class ParamsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String extraString = GoRouterState.of(context).extra! as String;
+    final String? extraString = GoRouterState.of(context).extra?.toString();
 
     return Scaffold(
       appBar: const CustomAppbar(),
@@ -26,6 +26,18 @@ class ParamsPage extends StatelessWidget {
             Text('id: $id'),
             Text('search: $search'),
             Text('extraString: $extraString'),
+            FilledButton(
+              onPressed: () => context.replace('/top_route_page'),
+              child: const Text('replace route：/top_route_page'),
+            ),
+            FilledButton(
+              onPressed: () => context.replace('/normal_page'),
+              child: const Text('replace route：/normal_page'),
+            ),
+            FilledButton(
+              onPressed: () => context.replaceNamed('normal_page_route'),
+              child: const Text('replaceNamed: normal_page_route'),
+            ),
           ],
         ),
       ),

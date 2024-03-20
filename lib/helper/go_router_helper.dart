@@ -29,7 +29,6 @@ class GoRouterHelper {
           return null;
         } else {
           return '/login';
-          // return context.namedLocation('login_route');
         }
       },
       errorBuilder: (context, state) => CustomErrorScreen(state.error),

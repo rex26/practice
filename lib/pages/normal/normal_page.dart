@@ -22,6 +22,15 @@ class NormalPage extends StatelessWidget {
             Text('Normal Page - \$${number ?? 0}'),
             buildPushButton(context),
             FilledButton(
+              onPressed: () => context.push(
+                Uri(
+                  path: '/params_page',
+                  queryParameters: {'search': '调用 replace'},
+                ).toString(),
+              ),
+              child: const Text('push route：/params_page 到 params page'),
+            ),
+            FilledButton(
               onPressed: () {
                 GlobalValue.isLogin = false;
                 context.push('/normal_page');
