@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:practice/global/constant_data.dart';
 import 'package:practice/global/global_value.dart';
 
 import '../../widgets/custom_app_bar.dart';
 
 int commonPageCounter = 0;
 
-class NormalPage extends StatelessWidget {
+class NormalPage extends StatefulWidget {
   const NormalPage({this.number, Key? key}) : super(key: key);
   final String? number;
+
+  @override
+  State<NormalPage> createState() => _NormalPageState();
+}
+
+class _NormalPageState extends State<NormalPage> with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(vsync: this, lowerBound: 0.3, upperBound: 1.0, duration: const Duration(milliseconds: 500))..forward();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +33,7 @@ class NormalPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Normal Page - \$${number ?? 0}'),
+            Text('Normal Page - \$${widget.number ?? 0}'),
             buildPushButton(context),
             FilledButton(
               onPressed: () => context.push(
@@ -40,7 +54,7 @@ class NormalPage extends StatelessWidget {
             FilledButton(
               onPressed: () {
                 if (context.canPop()) {
-                  context.pop(number);
+                  context.pop(widget.number);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('There is nothing to pop')),
@@ -49,6 +63,83 @@ class NormalPage extends StatelessWidget {
               },
               child: const Text('返回上一个页面'),
             ),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    controller.forward(from: 0);
+                  },
+                  child: AnimatedBuilder(
+                    animation: controller,
+                    builder: (ctx, child) {
+                      return Transform.scale(
+                        scale: controller.value,
+                        child: Opacity(opacity: controller.value, child: child),
+                      );
+                    },
+                    child: Container(
+                      height: 100,
+                      width: 100,
+                      decoration: const BoxDecoration(
+                        color: Colors.orange,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                    ),
+                  ),
+                ),
+                Container(height: 100, width: 100, color: Colors.purple),
+                const Text(ConstantData.longText),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Colors.red,
+                    height: 100,
+                    width: 200,
+                    alignment: Alignment.center,
+                    child: const Text('red Container', style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    color: Colors.blue,
+                    height: 100,
+                    width: 200,
+                    alignment: Alignment.center,
+                    child: const Text('blue Container', style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              margin: const EdgeInsets.all(20),
+              child: const RepaintBoundary(child: CircularProgressIndicator()),
+            ),
+            Container(
+              height: 400,
+              margin: const EdgeInsets.symmetric(vertical: 20),
+              child: ListView.separated(
+                itemCount: 50,
+                itemBuilder: (context, index) => ListTile(
+                  leading: ClipRect(
+                    child: Image.asset(
+                      'assets/images/red.png',
+                      width: 200,
+                      height: 200,
+                    ),
+                  ),
+                  title: Text('${index + 1}'),
+                ),
+                separatorBuilder: (BuildContext context, int index) {
+                  return const Divider();
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -56,7 +147,7 @@ class NormalPage extends StatelessWidget {
   }
 
   Widget buildPushButton(BuildContext context) {
-    if (number == '3') {
+    if (widget.number == '3') {
       return FilledButton(
         onPressed: () => context.go('/top_route_page'),
         child: const Text('go route: /top_route_page'),
