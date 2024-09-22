@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:practice/global/constant_data.dart';
 import 'package:practice/global/global_value.dart';
+import 'package:practice/widgets/bubble_widget.dart';
 
 import '../../widgets/custom_app_bar.dart';
 
@@ -34,6 +35,11 @@ class _NormalPageState extends State<NormalPage> with SingleTickerProviderStateM
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('Normal Page - \$${widget.number ?? 0}'),
+            const ChatBubble(
+              text: "This is a left bubble\n hello world",
+              borderColor: Colors.blue,
+              isLeft: true,
+            ),
             buildPushButton(context),
             FilledButton(
               onPressed: () => context.push(

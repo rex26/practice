@@ -19,6 +19,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    print(const String.fromEnvironment('ENV'));
+
     switch (_routeType) {
       case 'Normal Route App':
         return const NormalRouteApp();
