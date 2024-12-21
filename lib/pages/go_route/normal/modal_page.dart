@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../widgets/custom_app_bar.dart';
+import 'package:practice/widgets/custom_app_bar.dart';
+
 
 class ModalPage extends StatefulWidget {
   const ModalPage({Key? key}) : super(key: key);

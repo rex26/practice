@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../widgets/custom_app_bar.dart';
+import 'package:practice/widgets/custom_app_bar.dart';
+
 
 class SubRoutePage extends StatelessWidget {
   const SubRoutePage({Key? key}) : super(key: key);

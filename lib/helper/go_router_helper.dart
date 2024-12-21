@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:practice/global/global_value.dart';
-import 'package:practice/pages/normal/home_page.dart';
-import 'package:practice/pages/normal/home_sub_route_page.dart';
-import 'package:practice/pages/normal/login_page.dart';
-import 'package:practice/pages/normal/modal_page.dart';
-import 'package:practice/pages/normal/normal_page.dart';
-import 'package:practice/pages/normal/param_page.dart';
-import 'package:practice/pages/normal/sub_route_page.dart';
-import 'package:practice/pages/normal/top_route_page.dart';
-import 'package:practice/pages/shell/shell_route_app.dart';
+import 'package:practice/pages/go_route/normal/home_page.dart';
+import 'package:practice/pages/go_route/normal/home_sub_route_page.dart';
+import 'package:practice/pages/go_route/normal/login_page.dart';
+import 'package:practice/pages/go_route/normal/modal_page.dart';
+import 'package:practice/pages/go_route/normal/normal_page.dart';
+import 'package:practice/pages/go_route/normal/param_page.dart';
+import 'package:practice/pages/go_route/normal/sub_route_page.dart';
+import 'package:practice/pages/go_route/normal/top_route_page.dart';
+import 'package:practice/pages/go_route/shell/shell_route_app.dart';
 import 'package:practice/utils/navigation_history_observer.dart';
 
 import '../pages/custom_error_screen.dart';

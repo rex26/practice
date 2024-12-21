@@ -4,7 +4,8 @@ import 'package:practice/global/constant_data.dart';
 import 'package:practice/global/global_value.dart';
 import 'package:practice/widgets/bubble_widget.dart';
 
-import '../../widgets/custom_app_bar.dart';
+import 'package:practice/widgets/custom_app_bar.dart';
+
 
 int commonPageCounter = 0;
 

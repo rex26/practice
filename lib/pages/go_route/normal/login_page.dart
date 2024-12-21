@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:practice/global/global_value.dart';
 
-import '../../widgets/custom_app_bar.dart';
+import 'package:practice/widgets/custom_app_bar.dart';
+
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);

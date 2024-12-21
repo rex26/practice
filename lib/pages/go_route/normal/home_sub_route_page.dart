@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:practice/widgets/custom_app_bar.dart';
 
-import '../../widgets/custom_app_bar.dart';
 
 class HomeSubRoutePage extends StatelessWidget {
   const HomeSubRoutePage({super.key});
