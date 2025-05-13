@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<autofill-service
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:identifier="androidx.autofill"
+    android:description="@string/autofill_description">
+</autofill-service>

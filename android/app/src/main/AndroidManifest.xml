@@ -30,5 +30,12 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+       <meta-data
+           android:name="android.max_aspect"
+           android:value="2.1" />
+       <meta-data
+           android:name="androidx.autofill"
+           android:resource="@xml/autofill_service" />
     </application>
 </manifest>
