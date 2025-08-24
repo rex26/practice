@@ -32,6 +32,12 @@ dependencies:
   # For local storage
   shared_preferences: ^2.2.2
   path_provider: ^2.1.2
+  talker_dio_logger: 4.4.7
+  talker_flutter: 4.4.7
+  bot_toast: ^4.1.3
+  package_info_plus: ^8.1.2
+  connectivity_plus: ^6.1.1
+  flutter_timezone: ^1.0.8
 
 dev_dependencies:
   flutter_test:
