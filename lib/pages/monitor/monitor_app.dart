@@ -52,9 +52,6 @@ class MonitorApp extends StatelessWidget {
                 elevation: 8,
                 borderRadius: BorderRadius.all(Radius.circular(8)),
                 child: MonitorWidget(
-                  showFPS: true,
-                  showCPU: true,
-                  showDisk: true, // Enable disk monitoring
                   theme: DashboardTheme(
                     backgroundColor: Color(0xFF1E1E1E),
                     textColor: Colors.white,

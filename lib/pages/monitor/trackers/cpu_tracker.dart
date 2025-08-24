@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:math';
+
 import 'base_tracker.dart';
 
 /// Data class for CPU measurements
@@ -17,8 +17,6 @@ class CpuData {
 /// Tracks CPU usage
 class CpuTracker extends BaseTracker {
   Timer? _timer;
-  final Random _random = Random();
-  double _lastUsage = 0;
 
   @override
   void onStart() {
@@ -31,22 +29,14 @@ class CpuTracker extends BaseTracker {
     _timer = null;
   }
 
-  void _checkCpu(Timer timer) {
-    final usage = _getCpuUsage();
-    final cores = _getCpuCores();
+  Future<void> _checkCpu(Timer timer) async {
+    final double usage = await systemStatsPlatform.invokeMethod<double>('getCpuUsage') ?? 0;
+    final int cores = _getCpuCores();
 
     addData(CpuData(
       usage: usage,
       cores: cores,
     ));
-  }
-
-  double _getCpuUsage() {
-    // Simulate CPU usage with some randomness but smooth transitions
-    const maxChange = 10.0;
-    final change = _random.nextDouble() * maxChange * 2 - maxChange;
-    _lastUsage = (_lastUsage + change).clamp(0.0, 100.0);
-    return _lastUsage;
   }
 
   int _getCpuCores() {

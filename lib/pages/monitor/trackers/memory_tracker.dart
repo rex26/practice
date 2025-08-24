@@ -1,9 +1,13 @@
 import 'dart:async';
+
 // import 'package:flutter/foundation.dart';
 import 'base_tracker.dart';
 
 /// Data class for memory measurements
 class MemoryData {
+  /// The current CPU usage percentage (0-100)
+  final double usage;
+
   /// The current heap usage in bytes
   final int heapUsage;
 
@@ -11,13 +15,12 @@ class MemoryData {
   final bool hadGC;
 
   /// Creates a new memory data instance
-  const MemoryData({required this.heapUsage, this.hadGC = false});
+  const MemoryData(this.usage, {this.heapUsage = 0, this.hadGC = false});
 }
 
 /// Tracks memory usage and garbage collection
 class MemoryTracker extends BaseTracker {
   Timer? _timer;
-  int? _lastHeapSize;
 
   @override
   void onStart() {
@@ -30,21 +33,9 @@ class MemoryTracker extends BaseTracker {
     _timer = null;
   }
 
-  void _checkMemory(Timer timer) {
-    final currentHeap = _getHeapUsage();
-    final hadGC = _lastHeapSize != null && currentHeap < _lastHeapSize!;
+  Future<void> _checkMemory(Timer timer) async {
+    final double usage = await systemStatsPlatform.invokeMethod<double>('getMemoryUsage') ?? 0;
 
-    addData(MemoryData(
-      heapUsage: currentHeap,
-      hadGC: hadGC,
-    ));
-
-    _lastHeapSize = currentHeap;
-  }
-
-  int _getHeapUsage() {
-    // This is a simplified version. In a real implementation,
-    // you would use platform-specific methods to get accurate memory usage
-    return 0;
+    addData(MemoryData(usage));
   }
 }

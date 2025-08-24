@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
+
+const MethodChannel systemStatsPlatform = MethodChannel('com.example.practice/system_stats');
+
 /// Base class for all performance trackers
 abstract class BaseTracker {
   bool _isTracking = false;
