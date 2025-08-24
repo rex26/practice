@@ -26,7 +26,7 @@ class AppConfig {
 
   static ApiKeys get apiKeys => _getApiKeys();
 
-  static String get baseURL => '';
+  static String get baseURL => 'https://jsonplaceholder.typicode.com';
 
   static String get webSocketURL => '';
 
