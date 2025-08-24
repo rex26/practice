@@ -4,6 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:practice/models/json_placeholder_models.dart';
+import 'package:practice/services/json_placeholder_service.dart';
+import 'package:practice/utils/logger.dart';
+import 'package:practice/utils/toast_util.dart';
 
 class DeviceMonitorPage extends StatefulWidget {
   const DeviceMonitorPage({super.key});
@@ -59,7 +63,7 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
   void _startMonitoring() {
     // 立即执行一次
     _updatePerformanceData();
-    
+
     // 每秒更新一次数据
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       _updatePerformanceData();
@@ -72,18 +76,18 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
       // 调用平台特定代码获取CPU和内存使用率
       final cpuUsage = await platform.invokeMethod<double>('getCpuUsage');
       final memoryUsage = await platform.invokeMethod('getMemoryUsage');
-      
+
       if (mounted) {
         setState(() {
           if (cpuUsage != null) {
             _cpuUsage = cpuUsage;
           }
-          
+
           if (memoryUsage != null) {
             // 解决类型转换问题
             _memoryUsage = memoryUsage;
           }
-          
+
           _isLoading = false;
         });
       }
@@ -115,6 +119,14 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
                   _buildCpuCard(),
                   const SizedBox(height: 20),
                   _buildMemoryCard(),
+                  FilledButton(
+                    onPressed: () async {
+                      showLoading();
+                      await JsonPlaceholderService.getUsers();
+                      dismissLoading();
+                    },
+                    child: const Text('获取用户列表'),
+                  ),
                 ],
               ),
             ),

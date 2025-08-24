@@ -8,7 +8,7 @@ import 'package:practice/pages/keyboard_visibility/keyboard_visibility_app.dart'
 import 'package:practice/pages/monitor/monitor_app.dart';
 
 void main() {
-  deviceMonitorMain();
+  runApp( const DeviceMonitorApp());
   // monitorMain();
   // runApp( const AutoFillApp());
   // runApp( const KeyboardVisibilityApp());

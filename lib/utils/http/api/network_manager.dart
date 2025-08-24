@@ -87,6 +87,7 @@ class NetworkManager {
         ),
         cancelToken: cancelToken,
       );
+      return ApiResponse(success: true, data: response.data);
       if (response.data is Map<String, dynamic>) {
         final Map<String, dynamic> originData = response.data;
         if (originData.containsKey('success')) {
