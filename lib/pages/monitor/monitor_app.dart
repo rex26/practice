@@ -1,9 +1,13 @@
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:practice/pages/monitor/config/monitor_config.dart';
 import 'package:practice/pages/monitor/performance_monitor.dart';
 import 'package:practice/pages/monitor/theme/dashboard_theme.dart';
+import 'package:practice/pages/monitor/trackers/base_tracker.dart';
 import 'dart:io';
 
 import 'package:practice/pages/monitor/widgets/monitor_widget.dart';
@@ -136,6 +140,65 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _startMonitoring();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  // 性能数据
+  double _cpuUsage = 0.0;
+  double _memoryUsage = 0.0;
+  Timer? _timer;
+
+  // 开始周期性监控
+  void _startMonitoring() {
+    // 立即执行一次
+    _updatePerformanceData();
+
+    // 每秒更新一次数据
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      _updatePerformanceData();
+    });
+  }
+
+  // 更新性能数据
+  Future<void> _updatePerformanceData() async {
+    try {
+      // 调用平台特定代码获取CPU和内存使用率
+      final cpuUsage = await systemStatsPlatform.invokeMethod<double>('getCpuUsage');
+      final memoryUsage = await systemStatsPlatform.invokeMethod('getMemoryUsage');
+
+      if (mounted) {
+        setState(() {
+          if (cpuUsage != null) {
+            _cpuUsage = cpuUsage;
+          }
+
+          if (memoryUsage != null) {
+            // 解决类型转换问题
+            _memoryUsage = memoryUsage;
+          }
+
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('获取性能数据失败: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -167,9 +230,109 @@ class _MyHomePageState extends State<MyHomePage> {
               const SizedBox(height: 10),
               Text(_diskStatus),
             ],
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  _buildCpuCard(),
+                  const SizedBox(height: 20),
+                  _buildMemoryCard(),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+
+  Widget _buildCpuCard() {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'CPU使用率',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const Divider(),
+            LinearProgressIndicator(
+              value: _cpuUsage,
+              minHeight: 10,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(
+                _getCpuColor(_cpuUsage * 100),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${(_cpuUsage * 100).toStringAsFixed(1)}%',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMemoryCard() {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '内存使用率',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const Divider(),
+            LinearProgressIndicator(
+              value: _memoryUsage,
+              minHeight: 10,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(
+                _getMemoryColor(_memoryUsage),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${(_memoryUsage * 100).toStringAsFixed(1)}%',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 根据CPU使用率返回对应的颜色
+  Color _getCpuColor(double usage) {
+    if (usage < 50) {
+      return Colors.green;
+    } else if (usage < 80) {
+      return Colors.orange;
+    } else {
+      return Colors.red;
+    }
+  }
+
+  // 根据内存使用率返回对应的颜色
+  Color _getMemoryColor(double usage) {
+    if (usage < 0.5) {
+      return Colors.green;
+    } else if (usage < 0.8) {
+      return Colors.orange;
+    } else {
+      return Colors.red;
+    }
   }
 }
