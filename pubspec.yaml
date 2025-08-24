@@ -21,6 +21,7 @@ dependencies:
   auto_size_text: ^3.0.0
   flutter_keyboard_visibility: ^6.0.0
   flutter_performance_pulse: 1.0.5
+  device_info_plus: ^9.1.2
 
 dev_dependencies:
   flutter_test:
