@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_performance_pulse/flutter_performance_pulse.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:practice/pages/monitor/config/monitor_config.dart';
+import 'package:practice/pages/monitor/performance_monitor.dart';
+import 'package:practice/pages/monitor/theme/dashboard_theme.dart';
 import 'dart:io';
+
+import 'package:practice/pages/monitor/widgets/monitor_widget.dart';
 
 void monitorMain() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,7 +51,7 @@ class MonitorApp extends StatelessWidget {
               child: Material(
                 elevation: 8,
                 borderRadius: BorderRadius.all(Radius.circular(8)),
-                child: PerformanceDashboard(
+                child: MonitorWidget(
                   showFPS: true,
                   showCPU: true,
                   showDisk: true, // Enable disk monitoring

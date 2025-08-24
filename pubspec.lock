@@ -42,7 +42,7 @@ packages:
     source: hosted
     version: "3.0.0"
   battery_plus:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: battery_plus
       sha256: ba605aeafd6609cb5f8020c609a51941803a5fb2b6a7576f7c7eeeb52d29e750
@@ -170,7 +170,7 @@ packages:
     source: hosted
     version: "1.18.0"
   compute:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: compute
       sha256: b70190d59352a267a9765a77b97d0f619874c84d30c5193ae71050ee22ab2ef7
@@ -233,14 +233,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.9.0"
-  dio_log:
-    dependency: "direct main"
-    description:
-      name: dio_log
-      sha256: "3cac6b98f70622e4cac2cf83a2d3198472ada56caa8fd3599ff33ef8dab5aaa5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.3.0+3"
   dio_web_adapter:
     dependency: transitive
     description:
@@ -306,7 +298,7 @@ packages:
     source: hosted
     version: "1.1.0"
   fl_chart:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: fl_chart
       sha256: "00b74ae680df6b1135bdbea00a7d1fc072a9180b7c3f3702e4b19a9943f5ed7d"
@@ -374,14 +366,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
-  flutter_performance_pulse:
-    dependency: "direct main"
-    description:
-      name: flutter_performance_pulse
-      sha256: "927bc64f813361d89c9ee6040759afc9166e539e4bf968b0bfb4b186f8eb8707"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -577,7 +561,7 @@ packages:
     source: hosted
     version: "1.9.0"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"
@@ -689,7 +673,7 @@ packages:
     source: hosted
     version: "4.1.0"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: "6e8bf70b7fef813df4e9a36f658ac46d107db4b4cfe1048b477d4e453a8159f5"
@@ -942,5 +926,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.5.3 <4.0.0"
+  dart: ">=3.5.0 <4.0.0"
   flutter: ">=3.24.0"

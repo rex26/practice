@@ -8,8 +8,8 @@ import 'package:practice/pages/keyboard_visibility/keyboard_visibility_app.dart'
 import 'package:practice/pages/monitor/monitor_app.dart';
 
 void main() {
-  deviceMonitorMain(); // 启动设备性能监控应用
-  // monitorMain();
+  // deviceMonitorMain();
+  monitorMain();
   // runApp( const AutoFillApp());
   // runApp( const KeyboardVisibilityApp());
   // runApp( const AutoSizeTextApp());
