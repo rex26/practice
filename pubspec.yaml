@@ -39,6 +39,8 @@ dependencies:
   connectivity_plus: ^6.1.1
   flutter_timezone: ^1.0.8
   json_annotation: ^4.9.0
+  performance_monitor:
+    path: plugins/performance_monitor
 
 dev_dependencies:
   flutter_test:

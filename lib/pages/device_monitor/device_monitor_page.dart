@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:practice/models/json_placeholder_models.dart';
+import 'package:performance_monitor/modules/monitor/monitor_models.dart';
+import 'package:performance_monitor/performance_monitor.dart';
+import 'package:performance_monitor/modules/monitor/logics/cpu_monitor.dart';
+import 'package:performance_monitor/modules/monitor/logics/memory_monitor.dart';
 import 'package:practice/services/json_placeholder_service.dart';
-import 'package:practice/utils/logger.dart';
 import 'package:practice/utils/toast_util.dart';
 
 class DeviceMonitorPage extends StatefulWidget {
@@ -18,15 +19,14 @@ class DeviceMonitorPage extends StatefulWidget {
 
 class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
   final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
-  static const platform = MethodChannel('com.example.practice/system_stats');
-
   // 性能数据
   double _cpuUsage = 0.0;
   double _memoryUsage = 0.0;
   String _deviceModel = '';
   String _deviceOs = '';
 
-  Timer? _timer;
+  StreamSubscription<double>? _cpuSub;
+  StreamSubscription<MemoryInfo>? _memSub;
   bool _isLoading = true;
 
   @override
@@ -38,7 +38,8 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _cpuSub?.cancel();
+    _memSub?.cancel();
     super.dispose();
   }
 
@@ -59,47 +60,35 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
     }
   }
 
-  // 开始周期性监控
+  // 开始监控，使用插件提供的监控流
   void _startMonitoring() {
-    // 立即执行一次
-    _updatePerformanceData();
+    // 初始化插件悬浮窗（仅在调试/开发环境建议启用）
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      PerformanceMonitor().initialize(
+        context: context,
+        config: const PerformanceMonitorConfig(),
+      );
+    });
 
-    // 每秒更新一次数据
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      _updatePerformanceData();
+    // 订阅CPU
+    _cpuSub = CpuMonitor().cpuUsageStream.listen((v) {
+      if (!mounted) return;
+      setState(() {
+        _cpuUsage = v;
+        _isLoading = false;
+      });
+    });
+    // 订阅内存
+    _memSub = MemoryMonitor().memoryStream.listen((info) {
+      if (!mounted) return;
+      setState(() {
+        _memoryUsage = info.percentUsed;
+        _isLoading = false;
+      });
     });
   }
 
-  // 更新性能数据
-  Future<void> _updatePerformanceData() async {
-    try {
-      // 调用平台特定代码获取CPU和内存使用率
-      final cpuUsage = await platform.invokeMethod<double>('getCpuUsage');
-      final memoryUsage = await platform.invokeMethod('getMemoryUsage');
-
-      if (mounted) {
-        setState(() {
-          if (cpuUsage != null) {
-            _cpuUsage = cpuUsage;
-          }
-
-          if (memoryUsage != null) {
-            // 解决类型转换问题
-            _memoryUsage = memoryUsage;
-          }
-
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('获取性能数据失败: $e');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
+  // 本页不再直接通过MethodChannel获取数据
 
   @override
   Widget build(BuildContext context) {
