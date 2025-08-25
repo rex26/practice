@@ -42,34 +42,34 @@ class _MonitorOverlayState extends State<MonitorOverlay> {
   }
 
   Widget _buildOverlayContent() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Text('性能监控', style: TextStyle(color: Colors.white)),
-              IconButton(
-                icon: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more, color: Colors.white),
-                onPressed: () {
-                  setState(() {
-                    _isExpanded = !_isExpanded;
-                  });
-                },
-              ),
+    return Material(
+      borderRadius: BorderRadius.circular(8),
+      color: Colors.black.withOpacity(0.7),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text('性能监控', style: TextStyle(fontSize: 16, color: Colors.white)),
+                IconButton(
+                  icon: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more, color: Colors.white),
+                  onPressed: () {
+                    setState(() {
+                      _isExpanded = !_isExpanded;
+                    });
+                  },
+                ),
+              ],
+            ),
+            if (_isExpanded) ...[
+              if (widget.showCpu) _buildCpuIndicator(),
+              if (widget.showMemory) _buildMemoryIndicator(),
+              if (widget.showNetwork) _buildNetworkIndicator(),
             ],
-          ),
-          if (_isExpanded) ...[
-            if (widget.showCpu) _buildCpuIndicator(),
-            if (widget.showMemory) _buildMemoryIndicator(),
-            if (widget.showNetwork) _buildNetworkIndicator(),
           ],
-        ],
+        ),
       ),
     );
   }
@@ -108,14 +108,14 @@ class _MonitorOverlayState extends State<MonitorOverlay> {
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              '警告: ${alert.url} - ${alert.requestCount}次请求在${alert.timeWindowSeconds}秒内',
-              style: const TextStyle(color: Colors.white, fontSize: 12),
+              '警告: ${alert.url.replaceFirst('https://jsonplaceholder.typicode.com', '')} 在${alert.timeWindowSeconds}秒内,请求${alert.requestCount}次',
+              style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
           );
         }
         return Container(
           margin: const EdgeInsets.only(top: 4),
-          child: const Text('网络监控: 正常', style: TextStyle(color: Colors.white, fontSize: 12)),
+          child: const Text('网络监控: 正常', style: TextStyle(color: Colors.white, fontSize: 16)),
         );
       },
     );
@@ -128,7 +128,7 @@ class _MonitorOverlayState extends State<MonitorOverlay> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('$label: ${(value * 100).toStringAsFixed(1)}%',
-              style: const TextStyle(color: Colors.white, fontSize: 12)),
+              style: const TextStyle(color: Colors.white, fontSize: 16)),
           Container(
             height: 4,
             width: 100,

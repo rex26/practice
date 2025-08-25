@@ -3,11 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:performance_monitor/modules/monitor/monitor_models.dart';
 import 'package:performance_monitor/performance_monitor.dart';
-import 'package:performance_monitor/modules/monitor/logics/cpu_monitor.dart';
-import 'package:performance_monitor/modules/monitor/logics/memory_monitor.dart';
 import 'package:practice/services/json_placeholder_service.dart';
+import 'package:practice/utils/http/api/network_manager.dart';
 import 'package:practice/utils/toast_util.dart';
 
 class DeviceMonitorPage extends StatefulWidget {
@@ -19,15 +17,8 @@ class DeviceMonitorPage extends StatefulWidget {
 
 class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
   final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
-  // 性能数据
-  double _cpuUsage = 0.0;
-  double _memoryUsage = 0.0;
   String _deviceModel = '';
   String _deviceOs = '';
-
-  StreamSubscription<double>? _cpuSub;
-  StreamSubscription<MemoryInfo>? _memSub;
-  bool _isLoading = true;
 
   @override
   void initState() {
@@ -38,8 +29,6 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
 
   @override
   void dispose() {
-    _cpuSub?.cancel();
-    _memSub?.cancel();
     super.dispose();
   }
 
@@ -66,25 +55,8 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       PerformanceMonitor().initialize(
         context: context,
-        config: const PerformanceMonitorConfig(),
+        dio: NetworkManager.instance.dio,
       );
-    });
-
-    // 订阅CPU
-    _cpuSub = CpuMonitor().cpuUsageStream.listen((v) {
-      if (!mounted) return;
-      setState(() {
-        _cpuUsage = v;
-        _isLoading = false;
-      });
-    });
-    // 订阅内存
-    _memSub = MemoryMonitor().memoryStream.listen((info) {
-      if (!mounted) return;
-      setState(() {
-        _memoryUsage = info.percentUsed;
-        _isLoading = false;
-      });
     });
   }
 
@@ -96,29 +68,26 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
       appBar: AppBar(
         title: const Text('设备性能监控'),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildDeviceInfoCard(),
-                  const SizedBox(height: 20),
-                  _buildCpuCard(),
-                  const SizedBox(height: 20),
-                  _buildMemoryCard(),
-                  FilledButton(
-                    onPressed: () async {
-                      showLoading();
-                      await JsonPlaceholderService.getUsers();
-                      dismissLoading();
-                    },
-                    child: const Text('获取用户列表'),
-                  ),
-                ],
-              ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDeviceInfoCard(),
+            const SizedBox(height: 20),
+            FilledButton(
+              onPressed: () async {
+                showLoading();
+                for (int i = 0; i < 5; ++i) {
+                  await JsonPlaceholderService.getUsers();
+                }
+                dismissLoading();
+              },
+              child: const Text('获取用户列表'),
             ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -138,8 +107,7 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
             Text('型号: $_deviceModel'),
             const SizedBox(height: 8),
             Text('系统: $_deviceOs'),
-            const SizedBox(height: 8),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -160,16 +128,16 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
             ),
             const Divider(),
             LinearProgressIndicator(
-              value: _cpuUsage,
+              value: 0,
               minHeight: 10,
               backgroundColor: Colors.grey[300],
               valueColor: AlwaysStoppedAnimation<Color>(
-                _getCpuColor(_cpuUsage * 100),
+                _getCpuColor(0 * 100),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              '${(_cpuUsage * 100).toStringAsFixed(1)}%',
+              '${(0 * 100).toStringAsFixed(1)}%',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
@@ -192,16 +160,16 @@ class _DeviceMonitorPageState extends State<DeviceMonitorPage> {
             ),
             const Divider(),
             LinearProgressIndicator(
-              value: _memoryUsage,
+              value: 0,
               minHeight: 10,
               backgroundColor: Colors.grey[300],
               valueColor: AlwaysStoppedAnimation<Color>(
-                _getMemoryColor(_memoryUsage),
+                _getMemoryColor(0),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              '${(_memoryUsage * 100).toStringAsFixed(1)}%',
+              '${(0 * 100).toStringAsFixed(1)}%',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],

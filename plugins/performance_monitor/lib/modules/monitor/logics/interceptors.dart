@@ -1,4 +1,4 @@
-// Dio拦截器示例
+// Dio interceptor example
 import 'package:dio/dio.dart';
 import 'package:performance_monitor/modules/monitor/logics/network_monitor.dart';
 
@@ -15,7 +15,7 @@ class PerformanceInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    // 可以在这里记录响应时间等信息
+    // Response time and other information can be recorded here
     super.onResponse(response, handler);
   }
 }

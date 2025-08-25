@@ -3,6 +3,11 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 class MemoryMonitor {
+  // Singleton pattern
+  static final MemoryMonitor _instance = MemoryMonitor._internal();
+  factory MemoryMonitor() => _instance;
+  MemoryMonitor._internal();
+
   Timer? _timer;
   final StreamController<MemoryInfo> _memoryController = StreamController<MemoryInfo>.broadcast();
   static const MethodChannel _channel = MethodChannel('performance_monitor');
@@ -10,6 +15,7 @@ class MemoryMonitor {
   Stream<MemoryInfo> get memoryStream => _memoryController.stream;
 
   void start({Duration interval = const Duration(seconds: 1)}) {
+    if (_timer != null) return; // idempotent
     _timer = Timer.periodic(interval, (_) => _updateMemoryUsage());
   }
 

@@ -42,6 +42,8 @@ class NetworkManager {
   static bool get isNotConnected =>
       _instance._connectionStatus.contains(ConnectivityResult.none);
 
+  get dio => _dio;
+
   NetworkManager._() {
     _dio = Dio(BaseOptions(
       baseUrl: AppConfig.baseURL,
@@ -88,22 +90,6 @@ class NetworkManager {
         cancelToken: cancelToken,
       );
       return ApiResponse(success: true, data: response.data);
-      if (response.data is Map<String, dynamic>) {
-        final Map<String, dynamic> originData = response.data;
-        if (originData.containsKey('success')) {
-          return ApiResponse.fromJson(originData);
-        } else {
-          return ApiResponse(
-            success: validateResponse(response.statusCode),
-            data: originData,
-          );
-        }
-      }  else {
-        return ApiResponse(
-          success: validateResponse(response.statusCode),
-          message: response.statusMessage,
-        );
-      }
     } on DioException catch (e) {
       if (catchExceptions) {
         return handleError(exception: e, showTopSnackOnError: showTopSnackOnError);

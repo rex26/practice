@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
+import 'package:performance_monitor/modules/monitor/logics/interceptors.dart';
+
 class NetworkMonitor {
   static final NetworkMonitor _instance = NetworkMonitor._internal();
   factory NetworkMonitor() => _instance;
@@ -10,46 +13,40 @@ class NetworkMonitor {
 
   Stream<NetworkAlert> get alertStream => _alertController.stream;
 
-  // 初始化并注入HTTP客户端
-  void initialize() {
-    // 拦截dio请求
-    _setupDioInterceptor();
-    // 拦截http请求
-    _setupHttpOverrides();
+  /// We need to store the interceptor for external access
+  late final PerformanceInterceptor dioInterceptor;
+
+  /// Initialize monitoring
+  void initialize(Dio dio) {
+    // Create a Dio interceptor for injection into the app's Dio instances
+    dioInterceptor = PerformanceInterceptor(this);
+    dio.interceptors.add(dioInterceptor);
   }
 
-  void _setupDioInterceptor() {
-    // 创建Dio拦截器，添加到应用的Dio实例
-  }
-
-  void _setupHttpOverrides() {
-    // 重写HttpOverrides以捕获标准http请求
-  }
-
-  // 记录请求
+  /// Record a request
   void recordRequest(String url, DateTime startTime) {
     if (!_requestMap.containsKey(url)) {
       _requestMap[url] = [];
     }
-    _requestMap[url]!.add(RequestRecord(startTime: startTime));
+    _requestMap[url]?.add(RequestRecord(startTime: startTime));
 
-    // 检测并发请求
+    // Detect concurrent requests
     _detectConcurrentRequests(url);
   }
 
-  // 检测并发请求
+  /// Detect concurrent requests
   void _detectConcurrentRequests(String url) {
-    final requests = _requestMap[url]!;
+    final List<RequestRecord>? requests = _requestMap[url];
 
-    // 清理旧请求记录
+    // Clean up old request records
     _cleanupOldRequests(url);
 
-    // 检查短时间内的请求数量
-    final recentRequests = requests.where((r) =>
-        r.startTime.isAfter(DateTime.now().subtract(const Duration(seconds: 5)))
-    ).toList();
+    // Check the number of requests within a short time period
+    final List<RequestRecord> recentRequests = requests?.where((r) {
+      return r.startTime.isAfter(DateTime.now().subtract(const Duration(seconds: 5)));
+    }).toList() ?? [];
 
-    // 如果同一URL在短时间内有多次请求，触发警报
+    // If there are multiple requests to the same URL in a short time, trigger an alert
     if (recentRequests.length >= 3) {
       _alertController.add(NetworkAlert(
         url: url,
@@ -60,10 +57,10 @@ class NetworkMonitor {
   }
 
   void _cleanupOldRequests(String url) {
-    // 移除30秒前的请求记录
-    _requestMap[url] = _requestMap[url]!.where((r) =>
-        r.startTime.isAfter(DateTime.now().subtract(const Duration(seconds: 30)))
-    ).toList();
+    // Remove request records from more than 30 seconds ago
+    _requestMap[url] = _requestMap[url]?.where((r) {
+      return r.startTime.isAfter(DateTime.now().subtract(const Duration(seconds: 30)));
+    }).toList() ?? [];
   }
 
   void dispose() {

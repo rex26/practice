@@ -1,4 +1,5 @@
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:performance_monitor/modules/monitor/logics/cpu_monitor.dart';
 import 'package:performance_monitor/modules/monitor/logics/memory_monitor.dart';
@@ -28,6 +29,7 @@ class PerformanceMonitor {
   // 初始化监控器
   void initialize({
     required BuildContext context,
+    Dio? dio,
     PerformanceMonitorConfig config = const PerformanceMonitorConfig(),
   }) {
     if (_isInitialized) return;
@@ -44,8 +46,8 @@ class PerformanceMonitor {
       _memoryMonitor.start(interval: config.sampleInterval);
     }
 
-    if (config.monitorNetwork) {
-      _networkMonitor.initialize();
+    if (config.monitorNetwork && dio != null) {
+      _networkMonitor.initialize(dio);
     }
 
     // 添加悬浮窗
@@ -55,7 +57,7 @@ class PerformanceMonitor {
   }
 
   void _showOverlay(BuildContext context, PerformanceMonitorConfig config) {
-    final overlay = Overlay.of(context);
+    final OverlayState overlay = Overlay.of(context);
     _overlayEntry = OverlayEntry(
       builder: (context) => MonitorOverlay(
         showCpu: config.monitorCpu,

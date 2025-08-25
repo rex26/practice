@@ -31,7 +31,3 @@ class DeviceMonitorApp extends StatelessWidget {
     );
   }
 }
-
-void deviceMonitorMain() {
-  runApp(const DeviceMonitorApp());
-}
