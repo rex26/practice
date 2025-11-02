@@ -2,6 +2,8 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services" version "4.4.1"
+    id "com.google.firebase.crashlytics" version "2.9.9" apply false
 }
 
 def localProperties = new Properties()
@@ -64,6 +66,8 @@ android {
         versionName flutterVersionName +"-" + dartEnvironmentVariables.APP_ENV
         multiDexEnabled true
         ndk { abiFilters 'armeabi-v7a', 'arm64-v8a' }
+        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
     buildTypes {
@@ -72,6 +76,13 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
         }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+    testOptions {
+        execution "ANDROIDX_TEST_ORCHESTRATOR"
     }
 }
 

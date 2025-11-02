@@ -50,8 +50,18 @@ dev_dependencies:
   go_router_builder: ^2.4.1
   envied_generator: ^0.5.2
   json_serializable: ^6.9.0
+  patrol: ^3.11.1
 flutter:
   uses-material-design: true
 
   assets:
     - assets/images/
+
+patrol:
+  app_name: practice
+  android:
+    package_name: com.example.practice
+  ios:
+    bundle_id: com.example.practice
+  macos:
+    bundle_id: com.example.practice
