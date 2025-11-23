@@ -502,8 +502,7 @@ class _AnimationWidgetState extends State<_AnimationWidget>
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
-    )
-      ..repeat();
+    )..repeat();
   }
 
   @override
@@ -767,7 +766,7 @@ class BeveledRectangleBorderDemo extends StatefulWidget {
 
 class _BeveledRectangleBorderDemoState
     extends State<BeveledRectangleBorderDemo> {
-  double _borderRadius = 16.0;
+  double _borderRadius = 30.0;
   double _borderWidth = 2.0;
 
   @override
@@ -813,8 +812,8 @@ class _BeveledRectangleBorderDemoState
           Slider(
             value: _borderRadius,
             min: 0,
-            max: 50,
-            divisions: 10,
+            max: 80,
+            divisions: 16,
             onChanged: (value) {
               setState(() {
                 _borderRadius = value;
@@ -837,12 +836,17 @@ class _BeveledRectangleBorderDemoState
           const SizedBox(height: 20),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
               shape: BeveledRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
             onPressed: () {},
-            child: const Text('切角按钮'),
+            child: const Text('切角按钮',style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),),
           ),
         ],
       ),
