@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 
@@ -585,7 +586,12 @@ class _SensitiveContentDemoState extends State<SensitiveContentDemo> {
                         '敏感内容区域',
                         style: TextStyle(color: Colors.orange, fontSize: 12),
                       ),
-                      passwordField,
+                      // SensitiveContent 在某些 Flutter 版本中可能不可用
+                      // 如果编译错误，请注释掉下面的代码并使用 passwordField
+                      SensitiveContent(
+                        sensitivity: ContentSensitivity.autoSensitive,
+                        child: passwordField,
+                      ),
                     ],
                   ),
                 )
@@ -655,23 +661,66 @@ class _BlockSemanticsDemoState extends State<BlockSemanticsDemo> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
-            'BlockSemantics 可以阻止屏幕阅读器访问被遮挡的内容',
-            style: TextStyle(fontSize: 16),
+            'BlockSemantics 演示：无障碍功能测试',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.blue.shade200),
+            ),
+            child: const Text(
+              '💡 测试方法：\n'
+              '1. 开启手机的无障碍服务（如 TalkBack/VoiceOver）\n'
+              '2. 显示对话框后，尝试用手指滑动屏幕\n'
+              '3. 对比开启/关闭 BlockSemantics 的差异',
+              style: TextStyle(fontSize: 14),
+            ),
+          ),
           const SizedBox(height: 20),
-          const Card(
+          Card(
+            color: _showDialog && _useBlockSemantics
+                ? Colors.grey.shade300
+                : Colors.white,
             child: Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '背景内容',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.accessibility,
+                        color: _showDialog && _useBlockSemantics
+                            ? Colors.grey
+                            : Colors.blue,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '背景内容区域',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: _showDialog && _useBlockSemantics
+                              ? Colors.grey
+                              : Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 8),
-                  Text('当对话框打开时，屏幕阅读器应该忽略这些内容。'),
+                  const SizedBox(height: 8),
+                  Text(
+                    '当对话框显示时，这些内容应该被屏幕阅读器忽略',
+                    style: TextStyle(
+                      color: _showDialog && _useBlockSemantics
+                          ? Colors.grey
+                          : Colors.black87,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -679,7 +728,8 @@ class _BlockSemanticsDemoState extends State<BlockSemanticsDemo> {
           const SizedBox(height: 16),
           SwitchListTile(
             title: const Text('使用 BlockSemantics'),
-            subtitle: const Text('切换查看无障碍差异'),
+            subtitle: Text(
+                _useBlockSemantics ? '✅ 背景内容将被屏幕阅读器忽略' : '❌ 背景内容仍可被屏幕阅读器访问'),
             value: _useBlockSemantics,
             onChanged: (value) {
               setState(() {
@@ -688,19 +738,45 @@ class _BlockSemanticsDemoState extends State<BlockSemanticsDemo> {
             },
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
+          ElevatedButton.icon(
             onPressed: _toggleDialog,
-            child: Text(_showDialog ? '隐藏对话框' : '显示对话框'),
+            icon: Icon(_showDialog ? Icons.visibility_off : Icons.visibility),
+            label: Text(_showDialog ? '隐藏对话框' : '显示对话框'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _showDialog ? Colors.red : Colors.green,
+              foregroundColor: Colors.white,
+            ),
           ),
           const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text('背景按钮 1'),
+          const Text(
+            '测试按钮（用于无障碍测试）：',
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           ElevatedButton(
-            onPressed: () {},
-            child: const Text('背景按钮 2'),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('背景按钮 1 被点击')),
+              );
+            },
+            child: const Text('📱 背景按钮 1'),
+          ),
+          const SizedBox(height: 8),
+          ElevatedButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('背景按钮 2 被点击')),
+              );
+            },
+            child: const Text('🎯 背景按钮 2'),
+          ),
+          const SizedBox(height: 8),
+          const TextField(
+            decoration: InputDecoration(
+              labelText: '背景输入框',
+              hintText: '测试无障碍焦点',
+              border: OutlineInputBorder(),
+            ),
           ),
         ],
       ),
@@ -718,31 +794,84 @@ class _BlockSemanticsDemoState extends State<BlockSemanticsDemo> {
       child: Center(
         child: Card(
           margin: const EdgeInsets.all(32.0),
+          elevation: 8,
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  '模态对话框',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.priority_high,
+                      color: Colors.orange,
+                      size: 28,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      '模态对话框',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange.shade200),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        '🎯 无障碍测试重点：',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _useBlockSemantics
+                            ? '✅ BlockSemantics 已启用\n屏幕阅读器只能访问此对话框'
+                            : '❌ BlockSemantics 已禁用\n屏幕阅读器仍可访问背景内容',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: _useBlockSemantics
+                              ? Colors.green.shade700
+                              : Colors.red.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
                 const Text(
-                  '这个对话框应该是屏幕阅读器的焦点。'
-                  '背景内容应该被无障碍服务忽略。',
+                  '用手指滑动屏幕测试无障碍焦点范围',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    ElevatedButton(
+                    ElevatedButton.icon(
                       onPressed: _toggleDialog,
-                      child: const Text('取消'),
+                      icon: const Icon(Icons.close),
+                      label: const Text('取消'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        foregroundColor: Colors.white,
+                      ),
                     ),
-                    ElevatedButton(
+                    ElevatedButton.icon(
                       onPressed: _toggleDialog,
-                      child: const Text('确认'),
+                      icon: const Icon(Icons.check),
+                      label: const Text('确认'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
                     ),
                   ],
                 ),
@@ -842,11 +971,14 @@ class _BeveledRectangleBorderDemoState
               ),
             ),
             onPressed: () {},
-            child: const Text('切角按钮',style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),),
+            child: const Text(
+              '切角按钮',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
