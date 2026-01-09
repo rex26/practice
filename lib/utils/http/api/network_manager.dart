@@ -130,7 +130,7 @@ class NetworkManager {
         errorMsg = 'i10n.T.current.networkConnectionTimedOut';
         break;
       case DioExceptionType.cancel:
-        logger.d('Request has been cancelled');
+        logger.d('Request has been cancelled!');
         break;
       case DioExceptionType.badCertificate:
         errorMsg = 'i10n.T.current.networkCertificateIsInvalid';
